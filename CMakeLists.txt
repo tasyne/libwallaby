@@ -17,6 +17,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 set(INCLUDE ${libwallaby_SOURCE_DIR}/include)
 set(SRC ${libwallaby_SOURCE_DIR}/src)
 set(PIXELTOASTER ${SRC}/pixeltoaster)
+set(BINDINGS ${CMAKE_SOURCE_DIR}/swig)
+
+set(LIBRARY_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/lib)
 
 include_directories(${INCLUDE})
 
@@ -59,17 +62,17 @@ endif()
 
 
 
-#if(DEFINED ENV{OPENCV_INCLUDE_DIR})
-#  set(OPENCV_INCLUDE $ENV{OPENCV_INCLUDE_DIR})
-#elseif(WIN32)
-#  set(OPENCV_INCLUDE ${CMAKE_SOURCE_DIR}/../opencv/build/install/include)
-#endif()
+if(DEFINED ENV{OPENCV_INCLUDE_DIR})
+  set(OPENCV_INCLUDE $ENV{OPENCV_INCLUDE_DIR})
+elseif(WIN32)
+  set(OPENCV_INCLUDE ${CMAKE_SOURCE_DIR}/../opencv/build/install/include)
+endif()
 
-#if(DEFINED ENV{OPENCV_LIB_DIR})
-#  set(OPENCV_LIB $ENV{OPENCV_LIB_DIR})
-#elseif(WIN32)
-#  set(OPENCV_LIB ${CMAKE_SOURCE_DIR}/../opencv/build/install/x86/vc11/lib)
-#endif()
+if(DEFINED ENV{OPENCV_LIB_DIR})
+  set(OPENCV_LIB $ENV{OPENCV_LIB_DIR})
+elseif(WIN32)
+  set(OPENCV_LIB ${CMAKE_SOURCE_DIR}/../opencv/build/install/x86/vc11/lib)
+endif()
 
 if(DEFINED ENV{ZBAR_DIR})
   set(ZBAR_DIR $ENV{ZBAR_DIR})
@@ -77,18 +80,18 @@ elseif(WIN32)
   set(ZBAR_DIR "C:/Program Files (x86)/ZBar")
 endif()
 
-#find_package( OpenCV REQUIRED )
-#find_package(JPEG REQUIRED)
-#find_package (Threads)
+#find_package(OpenCV REQUIRED )
+find_package(JPEG REQUIRED)
+find_package (Threads)
 
 
 include_directories(${CMAKE_INSTALL_PREFIX}/include)
-#include_directories(${OPENCV_INCLUDE})
+include_directories(${OPENCV_INCLUDE})
 include_directories(${JPEG_INCLUDE_DIR})
 include_directories(${ZBAR_DIR}/include)
 
 link_directories(${CMAKE_INSTALL_PREFIX}/lib)
-#link_directories(${OPENCV_LIB})
+link_directories(${OPENCV_LIB})
 link_directories(${ZBAR_DIR}/lib)
 
 option(build_python "Build python bindings" ON)
@@ -102,18 +105,14 @@ if(build_python)
   set(PYTHON_BINDING_SOURCES ${CMAKE_BINARY_DIR}/wallaby_wrap_py.cxx)
   set(PYTHON_BINDING_LIBRARIES ${PYTHON_LIBRARY})
   include_directories(${PYTHON_INCLUDE_DIR})
-  add_custom_command(COMMAND ${SWIG_EXECUTABLE} -Wall -python -c++ 
--I${INCLUDE} -outdir ${LIBRARY_OUTPUT_PATH} -o 
-${CMAKE_BINARY_DIR}/wallaby_wrap_py.cxx ${BINDINGS}/wallaby.i
+  add_custom_command(COMMAND ${SWIG_EXECUTABLE} -Wall -python -c++ -I${INCLUDE}/wallaby -outdir ${LIBRARY_OUTPUT_PATH} -o ${CMAKE_BINARY_DIR}/wallaby_wrap_py.cxx ${BINDINGS}/wallaby.i
     DEPENDS ${SWIG_SOURCES}
-    OUTPUT ${CMAKE_BINARY_DIR}/wallaby_wrap_py.cxx 
-${LIBRARY_OUTPUT_PATH}/wallaby.py)
+    OUTPUT ${CMAKE_BINARY_DIR}/wallaby_wrap_py.cxx ${LIBRARY_OUTPUT_PATH}/wallaby.py)
 endif()
 
 if(build_python)
   add_library(wallaby_python SHARED ${PYTHON_BINDING_SOURCES})
-  set_target_properties(wallaby_python PROPERTIES PREFIX _ OUTPUT_NAME 
-wallaby SUFFIX .so)
+  set_target_properties(wallaby_python PROPERTIES PREFIX _ OUTPUT_NAME wallaby SUFFIX .so)
   target_link_libraries(wallaby_python wallaby ${PYTHON_BINDING_LIBRARIES} )
 endif()
 
@@ -122,7 +121,7 @@ endif()
 add_library(wallaby SHARED
 	${SOURCES} ${PIXELTOASTER_SOURCES} ${OBJC_SOURCES})
   
-target_link_libraries(wallaby ${JPEG_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} zbar)
+target_link_libraries(wallaby ${OpenCV_LIBS} ${JPEG_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT} zbar opencv_core opencv_highgui opencv_imgproc)
 
 if(APPLE)
   find_library(OPENGL_LIBRARY OpenGL)
@@ -152,3 +151,4 @@ install(TARGETS ${TESTS} DESTINATION bin/wallaby)
 install(TARGETS wallaby DESTINATION lib)
 install(DIRECTORY ${INCLUDE}/wallaby DESTINATION include)
 
+set(CMAKE_INSTALL_PREFIX /usr)

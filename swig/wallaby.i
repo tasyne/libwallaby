@@ -2,13 +2,13 @@
 %{
   //#include "kovan.hpp"
   //#include "kovan.h"
-  #include "wallaby.hpp"
-  #include "wallaby.h"
-  #include "segment.hpp"
-  #include "colinear_segmenter.hpp"
-  #include "xtion_depth_driver.hpp"
+  #include "wallaby/wallaby.hpp"
+  #include "wallaby/wallaby.h"
+  //#include "segment.hpp"
+  //#include "colinear_segmenter.hpp"
+  //#include "xtion_depth_driver.hpp"
   
-  #include "motor.hpp"
+  #include "wallaby/motors.hpp"
   
   #ifdef SWIGPYTHON
   #define _open open
@@ -16,7 +16,7 @@
   
   //#define CameraDevice Device
   
-  using namespace depth;
+  //using namespace depth;
 %}
 
 #define EXPORT_SYM
@@ -37,22 +37,22 @@
 %template(BoolSensor) Sensor<bool>;
 %include "motors.hpp"
 %include "geom.hpp"
-%include "port.hpp"
-%include "segment.hpp"
-%template(IntSegmenter) Segmenter<int>;
+//%include "port.hpp"
+//%include "segment.hpp"
+//%template(IntSegmenter) Segmenter<int>;
 %include "servo.hpp"
 %include "util.hpp"
-%include "create.hpp"
+//%include "create.hpp"
 %include "color.hpp"
 %include "battery.hpp"
 %include "analog.hpp"
 %include "accel.hpp"
 //%include "camera.hpp"
 %include "button.hpp"
-%include "ardrone.hpp"
+//%include "ardrone.hpp"
 %include "config.hpp"
-%include "datalog.hpp"
-%include "colinear_segmenter.hpp"
+//%include "datalog.hpp"
+//%include "colinear_segmenter.hpp"
 %include "digital.hpp"
 %include "graphics.h"
 
@@ -66,7 +66,7 @@
 %include "servo.h"
 %include "util.h"
 %include "create.h"
-%include "depth.h"
+//%include "depth.h"
 %include "battery.h"
 %include "analog.h"
 %include "general.h"
@@ -74,14 +74,14 @@
 //%include "camera.h"
 %include "button.h"
 %include "botball.h"
-%include "ardrone.h"
-%include "datalog.h"
+//%include "ardrone.h"
+//%include "datalog.h"
 %include "console.h"
 %include "audio.h"
 %include "thread.h"
 %include "digital.h"
 
 //%include "camera.i"
-%include "create.i"
-%include "motor.i"
+//%include "create.i"
+//%include "motor.i"
 
